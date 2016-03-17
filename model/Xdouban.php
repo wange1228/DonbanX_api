@@ -15,7 +15,8 @@ class Xdouban {
         include_once(BASEPATH."database/DB.php");
         include_once(BASEPATH."config/database.php");
         $source = $db["doubanx"]["dbdriver"]."://".
-                  $db["doubanx"]["username"].":@".
+                  $db["doubanx"]["username"].":".
+                  $db["doubanx"]["password"]."@".
                   $db["doubanx"]["hostname"]."/".
                   $db["doubanx"]["database"];
         $this->db =& load_database($source, true);

@@ -12,8 +12,8 @@ function get_config(){}
 
 function &load_database($params = "", $active_record_override = false)
 {
-	$database =& DB($params, $active_record_override);
-	return $database;
+    $database =& DB($params, $active_record_override);
+    return $database;
 }
 
 $main = new Api();
