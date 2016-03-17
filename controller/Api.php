@@ -5,14 +5,16 @@ class Api {
         set_time_limit(0);
         date_default_timezone_set("Asia/Shanghai");
         include_once(BASEPATH."model/Xdouban.php");
+        include_once(BASEPATH."lib/Snoopy.php");
         $this->xdouban = new Xdouban();
+        $this->snoopy = new Snoopy();
     }
 
     /**
      * 抓取详情页
      */
     private function fetch_douban_detail($url) {
-        $this->load->library("snoopy");
+        // $this->load->library("snoopy");
         // 替换http，避免302跳转
         $url = str_replace("http://", "https://", $url);
         $this->snoopy->fetch($url);
@@ -52,7 +54,7 @@ class Api {
         );
         $list_path = "https://movie.douban.com/j/search_subjects?";
 
-        $this->load->library("snoopy");
+        // $this->load->library("snoopy");
 
         // 循环电影和电视剧
         foreach ($type_tag as $type => $tags) {
@@ -99,7 +101,7 @@ class Api {
     }
 
     private function fetch_film_list($url) {
-        $this->load->library("snoopy");
+        // $this->load->library("snoopy");
         $this->snoopy->fetch($url);
         $list_str = $this->snoopy->results;
 
@@ -131,7 +133,7 @@ class Api {
         $name = trim(htmlspecialchars($_POST["name"]));
         if ($name !== "") {
             $rate = $this->get_rate_offline($name);
-            $rate = isset($rate) ? $rate : $this->get_rate_online($name);
+            $rate = (isset($rate) && !empty($rate)) ? $rate : $this->get_rate_online($name);
         } else {
             $rate = NULL;
         }
@@ -184,7 +186,7 @@ class Api {
      * 从线上页面实时获取信息
      */
     private function get_rate_online($name) {
-        $this->load->library("snoopy");
+        // $this->load->library("snoopy");
         $url = "https://movie.douban.com/subject_search?search_text=$name";
         $this->snoopy->fetch($url);
         $search_str = $this->snoopy->results;
