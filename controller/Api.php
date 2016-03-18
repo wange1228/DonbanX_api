@@ -52,6 +52,8 @@ class Api {
      * 获取豆瓣信息
      */
     public function get_rate() {
+        header("Content-type: application/json");
+        header("Access-Control-Allow-Origin: *");
         $name = trim(htmlspecialchars($_POST["name"]));
         $type = trim(htmlspecialchars($_POST["type"]));
         if ($name !== "" && in_array($type, array("movie", "book"))) {
@@ -61,8 +63,6 @@ class Api {
             $rate = NULL;
         }
 
-        header("Content-type: application/json");
-        header("Access-Control-Allow-Origin: *");
         echo json_encode(array(
             "ret" => $rate ? 0 : 1,
             "data" => $rate ? $rate : (object) array()
@@ -118,6 +118,7 @@ class Api {
                 "vote" => $vote,
                 "star" => $star,
                 "rate" => $rate,
+                "type" => $type,
                 "time" => date("Y-m-d H:i:s")
             );
         }
