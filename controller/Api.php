@@ -25,7 +25,7 @@ class Api {
         } else if ($type === "book") {
             preg_match('/book\.douban\.com\/subject\/(\d+)/i', $url, $match_id);
         }
-        preg_match('/<strong .*property="v:average">([0-9]\.[0-9])?<\/strong>/i', $detail_str, $match_average);
+        preg_match('/<strong .*property="v:average">\s*([0-9]\.[0-9])?\s*<\/strong>/i', $detail_str, $match_average);
         preg_match('/<span property="v:votes">(\d+)?<\/span>/i', $detail_str, $match_vote);
         preg_match('/<div class="ll bigstar(\d{2})"><\/div>/i', $detail_str, $match_star);
         preg_match('/<span property="v:itemreviewed">(.*)?<\/span>/i', $detail_str, $match_name);
@@ -92,9 +92,9 @@ class Api {
         $this->snoopy->fetch($url);
         $search_str = $this->snoopy->results;
         if ($type === "movie") {
-            preg_match('/<a class="nbg" href="https:\/\/movie\.douban\.com\/subject\/(\d+)?\/" onclick/i', $search_str, $match_id);
+            preg_match('/<a class="nbg" href="https:\/\/movie\.douban\.com\/subject\/(\d+)?\/"/i', $search_str, $match_id);
         } else if ($type === "book") {
-            preg_match('/<a class="nbg" href="https:\/\/book\.douban\.com\/subject\/(\d+)?\/" onclick/i', $search_str, $match_id);
+            preg_match('/<a class="nbg" href="https:\/\/book\.douban\.com\/subject\/(\d+)?\/"/i', $search_str, $match_id);
         }
 
         $output = NULL;
