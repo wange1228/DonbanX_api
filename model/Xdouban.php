@@ -20,11 +20,10 @@ class Xdouban {
                   $db["doubanx"]["hostname"]."/".
                   $db["doubanx"]["database"];
         $this->db =& load_database($source, true);
-        $this->tb = 'movie';
     }
 
-    public function set_rate($detail_id, $detail_name, $average, $vote, $star) {
-        $this->db->replace($this->tb, array(
+    public function set_rate($type, $detail_id, $detail_name, $average, $vote, $star) {
+        $this->db->replace($type, array(
             "id" => $detail_id,
             "name" => $detail_name,
             "average" => $average,
@@ -33,23 +32,12 @@ class Xdouban {
         ));
     }
 
-    public function get_rate($name) {
+    public function get_rate($name, $type) {
         $result = $this->db->select("id, name, average, vote, star")
-                           ->from($this->tb)
+                           ->from($type)
                            ->like("name", $name)
                            ->get()
                            ->first_row();
-        return $result;
-    }
-
-    public function get_rates($names) {
-        $this->db->select("id, name, average, vote, star")
-                 ->from($this->tb);
-        foreach ($names as $name) {
-            $this->db->or_like("name", $name);
-        }
-        $result = $this->db->get()->result();
-
         return $result;
     }
 }

@@ -48,9 +48,10 @@ class Api {
      */
     public function get_rate() {
         $name = trim(htmlspecialchars($_POST["name"]));
+        $type = trim(htmlspecialchars($_POST["type"]));
         if ($name !== "") {
-            $rate = $this->get_rate_offline($name);
-            $rate = (isset($rate) && !empty($rate)) ? $rate : $this->get_rate_online($name);
+            $rate = $this->get_rate_offline($name, $type);
+            $rate = (isset($rate) && !empty($rate)) ? $rate : $this->get_rate_online($name, $type);
         } else {
             $rate = NULL;
         }
@@ -66,24 +67,24 @@ class Api {
     /**
      * 录入数据库
      */
-    private function set_rate($id, $name, $average, $vote, $star) {
-        $this->xdouban->set_rate($id, $name, $average, $vote, $star);
+    private function set_rate($type, $id, $name, $average, $vote, $star) {
+        $this->xdouban->set_rate($type, $id, $name, $average, $vote, $star);
     }
 
     /**
      * 从数据库里去读信息
      */
-    private function get_rate_offline($name) {
-        $rate = $this->xdouban->get_rate($name);
+    private function get_rate_offline($name, $type) {
+        $rate = $this->xdouban->get_rate($name, $type);
         return $rate;
     }
 
     /**
      * 从线上页面实时获取信息
      */
-    private function get_rate_online($name) {
+    private function get_rate_online($name, $type) {
         // $this->load->library("snoopy");
-        $url = "https://movie.douban.com/subject_search?search_text=$name";
+        $url = "https://$type.douban.com/subject_search?search_text=$name";
         $this->snoopy->fetch($url);
         $search_str = $this->snoopy->results;
         preg_match('/<a class="nbg" href="https:\/\/movie\.douban\.com\/subject\/(\d+)?\/" onclick/i', $search_str, $match_id);
@@ -100,7 +101,7 @@ class Api {
             $name = $rate["name"];
 
             // 抓到数据后插入数据库
-            $this->set_rate($id, $name, $average, $vote, $star);
+            $this->set_rate($type, $id, $name, $average, $vote, $star);
             $output = (object) array(
                 "id" => $id,
                 "name" => $name,
