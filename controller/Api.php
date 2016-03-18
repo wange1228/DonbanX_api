@@ -44,7 +44,7 @@ class Api {
             "average" => $average,
             "vote" => $vote,
             "star" => $star,
-            "rate" => $rate
+            "rate" => json_encode($rate)
         );
     }
 
@@ -72,8 +72,8 @@ class Api {
     /**
      * 录入数据库
      */
-    private function set_rate($type, $id, $name, $average, $vote, $star) {
-        $this->doubanx->set_rate($type, $id, $name, $average, $vote, $star);
+    private function set_rate($type, $id, $name, $average, $vote, $star, $rate) {
+        $this->doubanx->set_rate($type, $id, $name, $average, $vote, $star, $rate);
     }
 
     /**
@@ -88,7 +88,6 @@ class Api {
      * 从线上页面实时获取信息
      */
     private function get_rate_online($name, $type) {
-        // $this->load->library("snoopy");
         $url = "https://$type.douban.com/subject_search?search_text=$name";
         $this->snoopy->fetch($url);
         $search_str = $this->snoopy->results;
@@ -102,21 +101,24 @@ class Api {
         if (isset($match_id[1])) {
             $id = $match_id[1];
             $url = "https://$type.douban.com/subject/$id/";
-            $rate = $this->fetch_douban_detail($url, $type);
+            $result = $this->fetch_douban_detail($url, $type);
 
-            $average = $rate["average"];
-            $vote = $rate["vote"];
-            $star = $rate["star"];
-            $name = $rate["name"];
+            $average = $result["average"];
+            $vote = $result["vote"];
+            $star = $result["star"];
+            $name = $result["name"];
+            $rate = $result["rate"];
 
             // 抓到数据后插入数据库
-            $this->set_rate($type, $id, $name, $average, $vote, $star);
+            $this->set_rate($type, $id, $name, $average, $vote, $star, $rate);
             $output = (object) array(
                 "id" => $id,
                 "name" => $name,
                 "average" => $average,
                 "vote" => $vote,
-                "star" => $star
+                "star" => $star,
+                "rate" => $rate,
+                "time" => date("Y-m-d H:i:s")
             );
         }
 
