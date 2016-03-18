@@ -146,22 +146,6 @@ class Api {
         ));
     }
 
-    public function get_rates() {
-        $names = trim(htmlspecialchars($_POST["name"]));
-        if ($names !== "") {
-            $rates = $this->get_rates_offline(explode("|", $names));
-        } else {
-            $rates = NULL;
-        }
-
-        header("Content-type: application/json");
-        header("Access-Control-Allow-Origin: *");
-        echo json_encode(array(
-            "ret" => isset($rates) ? 0 : 1,
-            "data" => isset($rates) ? $rates : array()
-        ));
-    }
-
     /**
      * 录入数据库
      */
@@ -175,11 +159,6 @@ class Api {
     private function get_rate_offline($name) {
         $rate = $this->xdouban->get_rate($name);
         return $rate;
-    }
-
-    private function get_rates_offline($names) {
-        $rates = $this->xdouban->get_rates($names);
-        return $rates;
     }
 
     /**
