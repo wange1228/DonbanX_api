@@ -4,9 +4,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 CREATE TABLE movie(
      `id` INT(11) PRIMARY KEY,
      `name` VARCHAR(50) NOT NULL,
-     `average` VARCHAR(10) DEFAULT "0.0",
+     `average` FLOAT(3,1) DEFAULT 0.0,
      `vote` INT(11) DEFAULT 0,
      `star` VARCHAR(2) DEFAULT "00",
+     `rate` VARCHAR(100) DEFAULT "{}",
      `time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
  */
