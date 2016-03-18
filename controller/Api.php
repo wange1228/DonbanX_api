@@ -4,9 +4,9 @@ class Api {
         // parent::__construct();
         set_time_limit(0);
         date_default_timezone_set("Asia/Shanghai");
-        include_once(BASEPATH."model/Xdouban.php");
+        include_once(BASEPATH."model/DoubanX.php");
         include_once(BASEPATH."lib/Snoopy.php");
-        $this->xdouban = new Xdouban();
+        $this->doubanx = new DoubanX();
         $this->snoopy = new Snoopy();
     }
 
@@ -73,14 +73,14 @@ class Api {
      * 录入数据库
      */
     private function set_rate($type, $id, $name, $average, $vote, $star) {
-        $this->xdouban->set_rate($type, $id, $name, $average, $vote, $star);
+        $this->doubanx->set_rate($type, $id, $name, $average, $vote, $star);
     }
 
     /**
      * 从数据库里去读信息
      */
     private function get_rate_offline($name, $type) {
-        $rate = $this->xdouban->get_rate($name, $type);
+        $rate = $this->doubanx->get_rate($name, $type);
         return $rate;
     }
 

@@ -10,7 +10,7 @@ CREATE TABLE movie(
      `time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
  */
-class Xdouban {
+class DoubanX {
     public function __construct() {
         include_once(BASEPATH."database/DB.php");
         include_once(BASEPATH."config/database.php");
