@@ -56,9 +56,15 @@ class Api {
         header("Access-Control-Allow-Origin: *");
         $name = trim(htmlspecialchars($_POST["name"]));
         $type = trim(htmlspecialchars($_POST["type"]));
+        $force = !!$_POST["force"];
         if ($name !== "" && in_array($type, array("movie", "book"))) {
-            $rate = $this->get_rate_offline($name, $type);
-            $rate = (isset($rate) && !empty($rate)) ? $rate : $this->get_rate_online($name, $type);
+            // 强制更新
+            if ($force) {
+                $rate = $this->get_rate_online($name, $type);
+            } else {
+                $rate = $this->get_rate_offline($name, $type);
+                $rate = (isset($rate) && !empty($rate)) ? $rate : $this->get_rate_online($name, $type);
+            }
         } else {
             $rate = NULL;
         }
