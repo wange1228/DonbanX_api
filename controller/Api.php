@@ -72,7 +72,7 @@ class Api {
         $force = !!$_POST["force"];
         if ($name !== "" &&                                             // 名称非空验证
             in_array($type, array("movie", "book")) &&                  // 类型验证
-            $token === $this->qzap_hash_time33($_SERVER["CSRF_KEY"])    // CSRF验证
+            (int)$token === $this->qzap_hash_time33($_SERVER["CSRF_KEY"])    // CSRF验证
             ) {
             // 强制更新
             if ($force) {
