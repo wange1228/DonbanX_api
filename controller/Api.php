@@ -94,6 +94,7 @@ class Api {
      * 从线上页面实时获取信息
      */
     private function get_rate_online($name, $type) {
+        $name = urlencode($name);
         $url = "https://$type.douban.com/subject_search?search_text=$name";
         $this->snoopy->fetch($url);
         $search_str = $this->snoopy->results;
