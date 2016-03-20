@@ -11,18 +11,6 @@ class Api {
     }
 
     /**
-     * CSRF验证
-     */
-    private function qzap_hash_time33($str) {
-        $hash = 5381;
-        $len = strlen($str);
-        for ($i = 0; $i < $len; ++$i) {
-            $hash = (int)(($hash<<5&0x7fffffff) + ord($str{$i}) + $hash);
-        }
-        return $hash & 0x7fffffff;
-    }
-
-    /**
      * 抓取详情页
      */
     private function fetch_douban_detail($url, $type) {
@@ -68,11 +56,9 @@ class Api {
         header("Access-Control-Allow-Origin: *");
         $name = trim(htmlspecialchars($_POST["name"]));
         $type = trim(htmlspecialchars($_POST["type"]));
-        $token = trim(htmlspecialchars($_POST["token"]));
         $force = !!$_POST["force"];
         if ($name !== "" &&                                             // 名称非空验证
-            in_array($type, array("movie", "book")) &&                  // 类型验证
-            (int)$token === $this->qzap_hash_time33($_SERVER["CSRF_KEY"])    // CSRF验证
+            in_array($type, array("movie", "book"))                     // 类型验证
             ) {
             // 强制更新
             if ($force) {
