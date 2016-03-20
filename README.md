@@ -1,5 +1,5 @@
 # DoubanX - API
-> 抓取豆瓣电影和豆瓣读书的评分信息，配合[DoubanX - Chrome 扩展](https://github.com/wange1228/DoubanX_crx)使用效果最佳。
+> 抓取豆瓣电影和豆瓣读书的评分信息，配合 [DoubanX - Chrome 扩展](https://github.com/wange1228/DoubanX_crx)使用效果最佳。
 
 ## Params
 ```
