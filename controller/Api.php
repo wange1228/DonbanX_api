@@ -1,7 +1,20 @@
 <?php
 class Api {
-    public function __construct(){
-        // parent::__construct();
+    private static $hosts = array(
+        "film.qq.com",
+        "v.qq.com",
+        "v.youku.com",
+        "www.tudou.com",
+        "www.iqiyi.com",
+        "www.le.com",
+        "tv.sohu.com",
+        "film.sohu.com",
+        "www.amazon.cn",
+        "product.dangdang.com",
+        "item.jd.com"
+    );
+
+    public function __construct() {
         set_time_limit(0);
         date_default_timezone_set("Asia/Shanghai");
         include_once(BASEPATH."model/DoubanX.php");
@@ -11,10 +24,17 @@ class Api {
     }
 
     /**
+     * 匹配指定链接中的host
+     */
+    private function match_host($url) {
+        preg_match("/^(http:\/\/)?([^\/]+)/i", $url, $matches);
+        return $matches[2];
+    }
+
+    /**
      * 抓取详情页
      */
     private function fetch_douban_detail($url, $type) {
-        // $this->load->library("snoopy");
         // 替换http，避免302跳转
         $url = str_replace("http://", "https://", $url);
         $this->snoopy->fetch($url);
@@ -57,8 +77,11 @@ class Api {
         $name = trim(htmlspecialchars($_POST["name"]));
         $type = trim(htmlspecialchars($_POST["type"]));
         $force = !!$_POST["force"];
+
         if ($name !== "" &&                                             // 名称非空验证
-            in_array($type, array("movie", "book"))                     // 类型验证
+            in_array($type, array("movie", "book")) &&                  // 类型验证
+            !is_null($_SERVER["HTTP_REFERER"]) &&                       // referer 非空验证
+            in_array($this->match_host($_SERVER["HTTP_REFERER"]), self::$hosts)  // referer 白名单验证
             ) {
             // 强制更新
             if ($force) {
