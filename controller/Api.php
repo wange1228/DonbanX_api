@@ -27,8 +27,8 @@ class Api {
      * 匹配指定链接中的host
      */
     private function match_host($url) {
-        preg_match("/^(http:\/\/)?([^\/]+)/i", $url, $matches);
-        return $matches[2];
+        $result = parse_url($url);
+        return $result["host"];
     }
 
     /**
