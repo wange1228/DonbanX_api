@@ -17,9 +17,7 @@ class Api {
     public function __construct() {
         set_time_limit(0);
         date_default_timezone_set("Asia/Shanghai");
-        include_once(BASEPATH."model/DoubanX.php");
         include_once(BASEPATH."lib/Snoopy.php");
-        $this->doubanx = new DoubanX();
         $this->snoopy = new Snoopy();
     }
 
@@ -69,6 +67,52 @@ class Api {
     }
 
     /**
+     * 获取豆瓣评论
+     */
+    public function get_review() {
+        header("Content-type: application/json");
+        header("Access-Control-Allow-Origin: *");
+        $id = (int) trim($_POST["id"]);
+
+        if ($id > 0 &&
+            !is_null($_SERVER["HTTP_REFERER"]) &&                       // referer 非空验证
+            in_array($this->match_host($_SERVER["HTTP_REFERER"]), self::$hosts)  // referer 白名单验证
+            ) {
+            $url = "https://www.douban.com/feed/subject/$id/reviews";
+            $this->snoopy->fetch($url);
+            $xml_str = $this->snoopy->results;
+            $xml_str = preg_replace('/\sxmlns="(.*?)"/', ' _xmlns="${1}"', $xml_str);
+            $xml_str = preg_replace('/<(\/)?(\w+):(\w+)/', '<${1}${2}_${3}', $xml_str);
+            $xml_str = preg_replace('/(\w+):(\w+)="(.*?)"/', '${1}_${2}="${3}"', $xml_str);
+            $xml_obj = simplexml_load_string($xml_str);
+            $xml_arr = json_decode(json_encode($xml_obj), true);
+            $items = $xml_arr["channel"]["item"];
+
+            $output = array();
+            foreach($items as $item) {
+                $creator = $item["dc_creator"];
+                $title = preg_replace('/\s\(评论:.*\)$/', '', $item["title"]);
+                $link = $item["link"];
+                $date = strtotime($item["pubDate"]);
+
+                array_push($output, (object) array(
+                    "creator" => $creator,
+                    "title" => $title,
+                    "link" => $link,
+                    "date" => $date
+                ));
+            }
+        } else {
+            $output = array();
+        }
+
+        echo json_encode(array(
+            "ret" => !empty($output) ? 0 : 1,
+            "data" => $output
+        ));
+    }
+
+    /**
      * 获取豆瓣信息
      */
     public function get_rate() {
@@ -83,6 +127,11 @@ class Api {
             !is_null($_SERVER["HTTP_REFERER"]) &&                       // referer 非空验证
             in_array($this->match_host($_SERVER["HTTP_REFERER"]), self::$hosts)  // referer 白名单验证
             ) {
+
+            // 验证通过才连接数据库
+            include_once(BASEPATH."model/DoubanX.php");
+            $this->doubanx = new DoubanX();
+
             // 强制更新
             if ($force) {
                 $rate = $this->get_rate_online($name, $type);
