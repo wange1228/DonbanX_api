@@ -22,6 +22,24 @@ class Api {
     }
 
     /**
+     * 格式化数据
+     */
+    private function format_data($data) {
+        $creator = $data["creator"];
+        $title = preg_replace('/\s\(评论:.*\)$/', '', $data["title"]);
+        $link = $data["link"];
+        $date = strtotime($data["pubDate"]);
+
+        return (object) array(
+            "creator" => $creator,
+            "title" => $title,
+            "link" => $link,
+            "date" => $date
+        );
+    }
+
+
+    /**
      * 匹配指定链接中的host
      */
     private function match_host($url) {
@@ -81,26 +99,25 @@ class Api {
             $url = "https://www.douban.com/feed/subject/$id/reviews";
             $this->snoopy->fetch($url);
             $xml_str = $this->snoopy->results;
-            $xml_str = preg_replace('/\sxmlns="(.*?)"/', ' _xmlns="${1}"', $xml_str);
-            $xml_str = preg_replace('/<(\/)?(\w+):(\w+)/', '<${1}${2}_${3}', $xml_str);
-            $xml_str = preg_replace('/(\w+):(\w+)="(.*?)"/', '${1}_${2}="${3}"', $xml_str);
+            $xml_str = str_replace("content:encoded", "encoded", $xml_str);
+            $xml_str = str_replace("dc:creator", "creator", $xml_str);
             $xml_obj = simplexml_load_string($xml_str);
             $xml_arr = json_decode(json_encode($xml_obj), true);
             $items = $xml_arr["channel"]["item"];
 
             $output = array();
-            foreach($items as $item) {
-                $creator = $item["dc_creator"];
-                $title = preg_replace('/\s\(评论:.*\)$/', '', $item["title"]);
-                $link = $item["link"];
-                $date = strtotime($item["pubDate"]);
+            $flag = false;
+            foreach($items as $key => $item) {
+                if (is_array($item)) {
+                    array_push($output, $this->format_data($item));
+                } else {
+                    $flag = true;
+                    break;
+                }
+            }
 
-                array_push($output, (object) array(
-                    "creator" => $creator,
-                    "title" => $title,
-                    "link" => $link,
-                    "date" => $date
-                ));
+            if ($flag) {
+                $output = array($this->format_data($items));
             }
         } else {
             $output = array();
