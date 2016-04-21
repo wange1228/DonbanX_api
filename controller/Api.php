@@ -91,6 +91,7 @@ class Api {
      * 获取豆瓣评论
      */
     public function get_review() {
+        $time_a = time();
         header("Content-type: application/json");
         header("Access-Control-Allow-Origin: *");
         $id = (int) trim($_POST["id"]);
@@ -99,8 +100,15 @@ class Api {
             !is_null($_SERVER["HTTP_REFERER"]) &&                       // referer 非空验证
             in_array($this->match_host($_SERVER["HTTP_REFERER"]), self::$hosts)  // referer 白名单验证
             ) {
+            $time_b = time();
+            $this->log->message("INFO", "[get_review]\t验证参数耗时：".($time_b-$time_a));
+
             $url = "https://www.douban.com/feed/subject/$id/reviews";
             $this->snoopy->fetch($url);
+
+            $time_c = time();
+            $this->log->message("INFO", "[get_review]\t抓取评论耗时：".($time_c-$time_b));
+
             $xml_str = $this->snoopy->results;
             $xml_str = str_replace("content:encoded", "encoded", $xml_str);
             $xml_str = str_replace("dc:creator", "creator", $xml_str);
@@ -122,6 +130,10 @@ class Api {
             if ($flag) {
                 $output = array($this->format_data($items));
             }
+
+            $time_d = time();
+            $this->log->message("INFO", "[get_review]\t处理数据耗时：".($time_d-$time_c));
+
         } else {
             $output = array();
         }
@@ -136,6 +148,7 @@ class Api {
      * 获取豆瓣信息
      */
     public function get_rate() {
+        $time_a = time();
         header("Content-type: application/json");
         header("Access-Control-Allow-Origin: *");
         $name = trim(htmlspecialchars($_POST["name"]));
@@ -147,6 +160,9 @@ class Api {
             !is_null($_SERVER["HTTP_REFERER"]) &&                       // referer 非空验证
             in_array($this->match_host($_SERVER["HTTP_REFERER"]), self::$hosts)  // referer 白名单验证
             ) {
+
+            $time_b = time();
+            $this->log->message("INFO", "[get_rate]\t验证参数耗时：".($time_b-$time_a));
 
             // 验证通过才连接数据库
             include_once(BASEPATH."model/DoubanX.php");
@@ -173,14 +189,21 @@ class Api {
      * 录入数据库
      */
     private function set_rate($type, $id, $name, $average, $vote, $star, $rate) {
+        $time_a = time();
         $this->doubanx->set_rate($type, $id, $name, $average, $vote, $star, $rate);
+        $time_b = time();
+        $this->log->message("INFO", "[get_rate]\t更新数据耗时：".($time_b-$time_a));
     }
 
     /**
      * 从数据库里去读信息
      */
     private function get_rate_offline($name, $type) {
+        $time_a = time();
         $rate = $this->doubanx->get_rate($name, $type);
+        $time_b = time();
+        $this->log->message("INFO", "[get_rate]\t查询数据耗时：".($time_b-$time_a));
+
         return $rate;
     }
 
@@ -190,7 +213,12 @@ class Api {
     private function get_rate_online($name, $type) {
         $name = urlencode($name);
         $url = "https://$type.douban.com/subject_search?search_text=$name";
+        $time_a = time();
         $this->snoopy->fetch($url);
+
+        $time_b = time();
+        $this->log->message("INFO", "[get_rate]\t抓取搜索耗时：".($time_b-$time_a));
+
         $search_str = $this->snoopy->results;
         if ($type === "movie") {
             preg_match('/<a class="nbg" href="https:\/\/movie\.douban\.com\/subject\/(\d+)?\/"/i', $search_str, $match_id);
@@ -203,6 +231,9 @@ class Api {
             $id = $match_id[1];
             $url = "https://$type.douban.com/subject/$id/";
             $result = $this->fetch_douban_detail($url, $type);
+
+            $time_c = time();
+            $this->log->message("INFO", "[get_rate]\t抓取详情耗时：".($time_c-$time_b));
 
             $average = $result["average"];
             $vote = $result["vote"];
