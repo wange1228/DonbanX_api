@@ -17,4 +17,5 @@ function &load_database($params = "", $active_record_override = false)
 }
 
 $main = new Api();
-$main->get_review();
+$method = isset($_GET['method']) ? $_GET['method'] : NULL;
+$main->$method();
