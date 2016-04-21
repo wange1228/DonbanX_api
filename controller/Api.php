@@ -64,17 +64,14 @@ class Api {
         } else if ($type === "book") {
             preg_match('/book\.douban\.com\/subject\/(\d+)/i', $url, $match_id);
         }
-        preg_match('/<strong .*property="v:average">\s*([0-9]\.[0-9])?\s*<\/strong>/i', $detail_str, $match_average);
-        preg_match('/<span property="v:votes">(\d+)?<\/span>/i', $detail_str, $match_vote);
-        preg_match('/<div class="ll bigstar(\d{2})"><\/div>/i', $detail_str, $match_star);
-        preg_match('/<span property="v:itemreviewed">(.*)?<\/span>/i', $detail_str, $match_name);
+        preg_match('/<span property="v:itemreviewed">(.*)?<\/span>[\s\S]*<strong .*property="v:average">\s*([0-9]\.[0-9])?\s*<\/strong>[\s\S]*<div class="ll bigstar(\d{2})"><\/div>[\s\S]*<span property="v:votes">(\d+)?<\/span>/i', $detail_str, $matches);
         preg_match_all('/<span class="rating_per">([0-9]+\.[0-9])?\%<\/span>/i', $detail_str, $match_rate);
 
         $id = $match_id[1];
-        $name = isset($match_name[1]) ? $match_name[1] : "";
-        $average = isset($match_average[1]) ? $match_average[1] : "0.0";
-        $vote = isset($match_vote[1]) ? $match_vote[1] : 0;
-        $star = isset($match_star[1]) ? $match_star[1] : "00";
+        $name = isset($matches[1]) ? $matches[1] : "";
+        $average = isset($matches[2]) ? $matches[2] : "0.0";
+        $star = isset($matches[3]) ? $matches[3] : "00";
+        $vote = isset($matches[4]) ? $matches[4] : 0;
         $rate = isset($match_rate[1]) ? $match_rate[1] : array();
 
         return array(
