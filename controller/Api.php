@@ -212,7 +212,8 @@ class Api {
      */
     private function get_rate_online($name, $type) {
         $name = urlencode($name);
-        $url = "https://$type.douban.com/subject_search?search_text=$name";
+        $url = "https://api.douban.com/v2/$type/search?count=1&q=$name";
+
         $time_a = time();
         $this->snoopy->fetch($url);
 
@@ -220,16 +221,16 @@ class Api {
         $this->log->message("INFO", "[get_rate]\t抓取搜索耗时：".($time_b-$time_a));
 
         $search_str = $this->snoopy->results;
-        if ($type === "movie") {
-            preg_match('/<a class="nbg" href="https:\/\/movie\.douban\.com\/subject\/(\d+)?\/"/i', $search_str, $match_id);
-        } else if ($type === "book") {
-            preg_match('/<a class="nbg" href="https:\/\/book\.douban\.com\/subject\/(\d+)?\/"/i', $search_str, $match_id);
-        }
+        $search_obj = json_decode($search_str);
+        $suggest_key = $type === "movie" ? "subjects" : "books";
+        $suggest_arr = $search_obj->{$suggest_key};
 
         $output = NULL;
-        if (isset($match_id[1])) {
-            $id = $match_id[1];
-            $url = "https://$type.douban.com/subject/$id/";
+        if (count($suggest_arr) !== 0) {
+            $suggest_obj = $suggest_arr[0];
+            $id = $suggest_obj->id;
+            $url = $suggest_obj->alt;
+
             $result = $this->fetch_douban_detail($url, $type);
 
             $time_c = time();
