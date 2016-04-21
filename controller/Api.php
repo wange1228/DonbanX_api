@@ -18,7 +18,10 @@ class Api {
         set_time_limit(0);
         date_default_timezone_set("Asia/Shanghai");
         include_once(BASEPATH."lib/Snoopy.php");
+        include_once(BASEPATH."lib/Log.php");
+
         $this->snoopy = new Snoopy();
+        $this->log = new Log();
     }
 
     /**
