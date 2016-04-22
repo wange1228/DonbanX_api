@@ -11,7 +11,8 @@ class Api {
         "film.sohu.com",
         "www.amazon.cn",
         "product.dangdang.com",
-        "item.jd.com"
+        "item.jd.com",
+        "re.jd.com"
     );
 
     public function __construct() {
