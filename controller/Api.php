@@ -27,63 +27,31 @@ class Api {
     }
 
     /**
-     * 格式化数据
+     * 获取豆瓣简介
      */
-    private function format_data($data) {
-        $creator = $data["creator"];
-        $title = preg_replace('/\s\(评论:.*\)$/', '', $data["title"]);
-        $link = $data["link"];
-        $date = strtotime($data["pubDate"]);
+    public function get_intro() {
+        header("Content-type: application/json");
+        header("Access-Control-Allow-Origin: *");
+        $name = trim(htmlspecialchars($_POST["name"]));
+        $type = trim(htmlspecialchars($_POST["type"]));
 
-        return (object) array(
-            "creator" => $creator,
-            "title" => $title,
-            "link" => $link,
-            "date" => $date
-        );
-    }
-
-
-    /**
-     * 匹配指定链接中的host
-     */
-    private function match_host($url) {
-        $result = parse_url($url);
-        return $result["host"];
-    }
-
-    /**
-     * 抓取详情页
-     */
-    private function fetch_douban_detail($url, $type) {
-        // 替换http，避免302跳转
-        $url = str_replace("http://", "https://", $url);
-        $this->snoopy->fetch($url);
-        $detail_str = $this->snoopy->results;
-
-        if ($type === "movie") {
-            preg_match('/movie\.douban\.com\/subject\/(\d+)/i', $url, $match_id);
-        } else if ($type === "book") {
-            preg_match('/book\.douban\.com\/subject\/(\d+)/i', $url, $match_id);
+        $output = NULL;
+        if ($name !== "" &&                                             // 名称非空验证
+            in_array($type, array("movie", "book")) &&                  // 类型验证
+            !is_null($_SERVER["HTTP_REFERER"]) &&                       // referer 非空验证
+            in_array($this->match_host($_SERVER["HTTP_REFERER"]), self::$hosts)  // referer 白名单验证
+            ) {
+            $suggest_arr = $this->get_suggest($name, $type);
+            if (count($suggest_arr) !== 0) {
+                $suggest_obj = $suggest_arr[0];
+                $output = $suggest_obj;
+            }
         }
-        preg_match('/<span property="v:itemreviewed">(.*)?<\/span>[\s\S]*<strong .*property="v:average">\s*([0-9]\.[0-9])?\s*<\/strong>[\s\S]*<div class="ll bigstar(\d{2})"><\/div>[\s\S]*<span property="v:votes">(\d+)?<\/span>/i', $detail_str, $matches);
-        preg_match_all('/<span class="rating_per">([0-9]+\.[0-9])?\%<\/span>/i', $detail_str, $match_rate);
 
-        $id = $match_id[1];
-        $name = isset($matches[1]) ? $matches[1] : "";
-        $average = isset($matches[2]) ? $matches[2] : "0.0";
-        $star = isset($matches[3]) ? $matches[3] : "00";
-        $vote = isset($matches[4]) ? $matches[4] : 0;
-        $rate = isset($match_rate[1]) ? $match_rate[1] : array();
-
-        return array(
-            "id" => $id,
-            "name" => $name,
-            "average" => $average,
-            "vote" => $vote,
-            "star" => $star,
-            "rate" => json_encode($rate)
-        );
+        echo json_encode(array(
+            "ret" => $output ? 0 : 1,
+            "data" => $output ? $output : (object) array()
+        ));
     }
 
     /**
@@ -185,6 +153,66 @@ class Api {
     }
 
     /**
+     * 格式化数据
+     */
+    private function format_data($data) {
+        $creator = $data["creator"];
+        $title = preg_replace('/\s\(评论:.*\)$/', '', $data["title"]);
+        $link = $data["link"];
+        $date = strtotime($data["pubDate"]);
+
+        return (object) array(
+            "creator" => $creator,
+            "title" => $title,
+            "link" => $link,
+            "date" => $date
+        );
+    }
+
+    /**
+     * 匹配指定链接中的host
+     */
+    private function match_host($url) {
+        $result = parse_url($url);
+        return $result["host"];
+    }
+
+    /**
+     * 抓取详情页
+     */
+    private function fetch_douban_detail($url, $type) {
+        // 替换http，避免302跳转
+        $url = str_replace("http://", "https://", $url);
+        $this->snoopy->fetch($url);
+        $detail_str = $this->snoopy->results;
+
+        if ($type === "movie") {
+            preg_match('/movie\.douban\.com\/subject\/(\d+)/i', $url, $match_id);
+        } else if ($type === "book") {
+            preg_match('/book\.douban\.com\/subject\/(\d+)/i', $url, $match_id);
+        }
+        preg_match('/<span property="v:itemreviewed">(.*)?<\/span>[\s\S]*<strong .*property="v:average">\s*([0-9]\.[0-9])?\s*<\/strong>[\s\S]*<div class="ll bigstar(\d{2})"><\/div>[\s\S]*<span property="v:votes">(\d+)?<\/span>/i', $detail_str, $matches);
+        preg_match_all('/<span class="rating_per">([0-9]+\.[0-9])?\%<\/span>/i', $detail_str, $match_rate);
+
+        $id = $match_id[1];
+        $name = isset($matches[1]) ? $matches[1] : "";
+        $average = isset($matches[2]) ? $matches[2] : "0.0";
+        $star = isset($matches[3]) ? $matches[3] : "00";
+        $vote = isset($matches[4]) ? $matches[4] : 0;
+        $rate = isset($match_rate[1]) ? $match_rate[1] : array();
+
+        return array(
+            "id" => $id,
+            "name" => $name,
+            "average" => $average,
+            "vote" => $vote,
+            "star" => $star,
+            "rate" => json_encode($rate)
+        );
+    }
+
+
+    /**
      * 录入数据库
      */
     private function set_rate($type, $id, $name, $average, $vote, $star, $rate) {
@@ -210,19 +238,7 @@ class Api {
      * 从线上页面实时获取信息
      */
     private function get_rate_online($name, $type) {
-        $name = urlencode($name);
-        $url = "https://api.douban.com/v2/$type/search?count=1&q=$name";
-
-        $time_a = time();
-        $this->snoopy->fetch($url);
-
-        $time_b = time();
-        $this->log->message("INFO", "[get_rate]\t抓取搜索耗时：".($time_b-$time_a));
-
-        $search_str = $this->snoopy->results;
-        $search_obj = json_decode($search_str);
-        $suggest_key = $type === "movie" ? "subjects" : "books";
-        $suggest_arr = $search_obj->{$suggest_key};
+        $suggest_arr = $this->get_suggest($name, $type);
 
         $output = NULL;
         if (count($suggest_arr) !== 0) {
@@ -256,5 +272,26 @@ class Api {
         }
 
         return $output;
+    }
+
+    /**
+     * 获取搜索结果
+     */
+    private function get_suggest($name, $type) {
+        $name = urlencode($name);
+        $url = "https://api.douban.com/v2/$type/search?count=1&q=$name";
+
+        $time_a = time();
+        $this->snoopy->fetch($url);
+
+        $time_b = time();
+        $this->log->message("INFO", "[get_rate]\t抓取搜索耗时：".($time_b-$time_a));
+
+        $search_str = $this->snoopy->results;
+        $search_obj = json_decode($search_str);
+        $suggest_key = $type === "movie" ? "subjects" : "books";
+        $suggest_arr = $search_obj->{$suggest_key};
+
+        return $suggest_arr;
     }
 }
