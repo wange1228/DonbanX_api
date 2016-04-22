@@ -120,7 +120,6 @@ class Api {
         header("Access-Control-Allow-Origin: *");
         $name = trim(htmlspecialchars($_POST["name"]));
         $type = trim(htmlspecialchars($_POST["type"]));
-        $force = !!$_POST["force"];
 
         if ($name !== "" &&                                             // 名称非空验证
             in_array($type, array("movie", "book")) &&                  // 类型验证
@@ -135,13 +134,8 @@ class Api {
             include_once(BASEPATH."model/DoubanX.php");
             $this->doubanx = new DoubanX();
 
-            // 强制更新
-            if ($force) {
-                $rate = $this->get_rate_online($name, $type);
-            } else {
-                $rate = $this->get_rate_offline($name, $type);
-                $rate = (isset($rate) && !empty($rate)) ? $rate : $this->get_rate_online($name, $type);
-            }
+            $rate = $this->get_rate_offline($name, $type);
+            $rate = (isset($rate) && !empty($rate)) ? $rate : $this->get_rate_online($name, $type);
         } else {
             $rate = NULL;
         }
