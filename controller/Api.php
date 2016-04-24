@@ -3,6 +3,7 @@ class Api {
     private static $hosts = array(
         "film.qq.com",
         "v.qq.com",
+        "www.youku.com",
         "movie.youku.com",
         "tv.youku.com",
         "v.youku.com",
