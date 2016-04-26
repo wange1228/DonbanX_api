@@ -15,6 +15,8 @@ class Api {
         "list.iqiyi.com",
         "so.iqiyi.com",
         "www.le.com",
+        "list.le.com",
+        "tv.le.com",
         "tv.sohu.com",
         "film.sohu.com",
         "www.amazon.cn",
