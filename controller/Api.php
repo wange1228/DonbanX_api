@@ -12,6 +12,7 @@ class Api {
         "www.tudou.com",
         "www.iqiyi.com",
         "vip.iqiyi.com",
+        "list.iqiyi.com",
         "so.iqiyi.com",
         "www.le.com",
         "tv.sohu.com",
