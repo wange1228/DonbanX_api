@@ -9,6 +9,7 @@ class Api {
         "v.youku.com",
         "movie.tudou.com",
         "tv.tudou.com",
+        "vip.tudou.com",
         "www.tudou.com",
         "www.iqiyi.com",
         "vip.iqiyi.com",
