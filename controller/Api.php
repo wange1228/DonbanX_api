@@ -21,6 +21,7 @@ class Api {
         "film.sohu.com",
         "www.amazon.cn",
         "product.dangdang.com",
+        "book.dangdang.com",
         "item.jd.com",
         "re.jd.com",
         "e.jd.com"
