@@ -20,6 +20,7 @@ class Api {
         "tv.sohu.com",
         "film.sohu.com",
         "www.amazon.cn",
+        "www.dangdang.com",
         "product.dangdang.com",
         "book.dangdang.com",
         "v.dangdang.com",
