@@ -28,7 +28,9 @@ class Api {
         "e.dangdang.com",
         "item.jd.com",
         "re.jd.com",
-        "e.jd.com"
+        "e.jd.com",
+        "book.jd.com",
+        "list.jd.com"
     );
 
     public function __construct() {
