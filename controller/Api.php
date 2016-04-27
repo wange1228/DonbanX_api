@@ -30,7 +30,8 @@ class Api {
         "re.jd.com",
         "e.jd.com",
         "book.jd.com",
-        "list.jd.com"
+        "list.jd.com",
+        "search.e.jd.com"
     );
 
     public function __construct() {
