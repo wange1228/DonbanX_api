@@ -31,7 +31,9 @@ class Api {
         "e.jd.com",
         "book.jd.com",
         "list.jd.com",
-        "search.e.jd.com"
+        "search.e.jd.com",
+        "movie.douban.com",
+        "book.douban.com"
     );
 
     public function __construct() {
