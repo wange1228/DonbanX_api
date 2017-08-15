@@ -5,7 +5,6 @@
 ```
   name      {String}    豆瓣电影或者豆瓣读书的标题  
   type      {String}    有 movie / book 两种可选类型  
-  force     {Boolean}   是否强制更新，true 从豆瓣重新抓取，false 从数据库读取  
 ```
 
 ## Return
