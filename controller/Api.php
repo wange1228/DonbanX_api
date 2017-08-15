@@ -89,13 +89,13 @@ class Api {
             in_array($this->match_host($_SERVER["HTTP_REFERER"]), self::$hosts)  // referer 白名单验证
             ) {
             $time_b = time();
-            $this->log->message("INFO", "[get_review]\t验证参数耗时：".($time_b-$time_a));
+            // $this->log->message("INFO", "[get_review]\t验证参数耗时：".($time_b-$time_a));
 
             $url = "https://www.douban.com/feed/subject/$id/reviews";
             $this->snoopy->fetch($url);
 
             $time_c = time();
-            $this->log->message("INFO", "[get_review]\t抓取评论耗时：".($time_c-$time_b));
+            // $this->log->message("INFO", "[get_review]\t抓取评论耗时：".($time_c-$time_b));
 
             $xml_str = $this->snoopy->results;
             $xml_str = str_replace("content:encoded", "encoded", $xml_str);
@@ -120,7 +120,7 @@ class Api {
             }
 
             $time_d = time();
-            $this->log->message("INFO", "[get_review]\t处理数据耗时：".($time_d-$time_c));
+            // $this->log->message("INFO", "[get_review]\t处理数据耗时：".($time_d-$time_c));
 
         } else {
             $output = array();
@@ -149,7 +149,7 @@ class Api {
             ) {
 
             $time_b = time();
-            $this->log->message("INFO", "[get_rate]\t验证参数耗时：".($time_b-$time_a));
+            // $this->log->message("INFO", "[get_rate]\t验证参数耗时：".($time_b-$time_a));
 
             // 验证通过才连接数据库
             include_once(BASEPATH."model/DoubanX.php");
@@ -234,7 +234,7 @@ class Api {
         $time_a = time();
         $this->doubanx->set_rate($type, $id, $name, $average, $vote, $star, $rate);
         $time_b = time();
-        $this->log->message("INFO", "[get_rate]\t更新数据耗时：".($time_b-$time_a));
+        // $this->log->message("INFO", "[get_rate]\t更新数据耗时：".($time_b-$time_a));
     }
 
     /**
@@ -244,7 +244,7 @@ class Api {
         $time_a = time();
         $rate = $this->doubanx->get_rate($name, $type);
         $time_b = time();
-        $this->log->message("INFO", "[get_rate]\t查询数据耗时：".($time_b-$time_a));
+        // $this->log->message("INFO", "[get_rate]\t查询数据耗时：".($time_b-$time_a));
 
         return $rate;
     }
@@ -264,7 +264,7 @@ class Api {
             $result = $this->fetch_douban_detail($url, $type);
 
             $time_c = time();
-            $this->log->message("INFO", "[get_rate]\t抓取详情耗时：".($time_c-$time_b));
+            // $this->log->message("INFO", "[get_rate]\t抓取详情耗时：".($time_c-$time_b));
 
             $average = $result["average"];
             $vote = $result["vote"];
@@ -272,18 +272,20 @@ class Api {
             $name = $result["name"];
             $rate = $result["rate"];
 
-            // 抓到数据后插入数据库
-            $this->set_rate($type, $id, $name, $average, $vote, $star, $rate);
-            $output = (object) array(
-                "id" => $id,
-                "name" => $name,
-                "average" => $average,
-                "vote" => $vote,
-                "star" => $star,
-                "rate" => $rate,
-                "type" => $type,
-                "time" => date("Y-m-d H:i:s")
-            );
+            if (trim($name) !== '') {
+                // 抓到数据后插入数据库
+                $this->set_rate($type, $id, $name, $average, $vote, $star, $rate);
+                $output = (object) array(
+                    "id" => $id,
+                    "name" => $name,
+                    "average" => $average,
+                    "vote" => $vote,
+                    "star" => $star,
+                    "rate" => $rate,
+                    "type" => $type,
+                    "time" => date("Y-m-d H:i:s")
+                );
+            }
         }
 
         return $output;
@@ -300,10 +302,22 @@ class Api {
         $this->snoopy->fetch($url);
 
         $time_b = time();
-        $this->log->message("INFO", "[get_rate]\t抓取搜索耗时：".($time_b-$time_a));
+        // $this->log->message("INFO", "[get_rate]\t抓取搜索耗时：".($time_b-$time_a));
 
         $search_str = $this->snoopy->results;
         $search_obj = json_decode($search_str);
+
+        // 如果没有获取到重试一次
+        if (
+            $search_obj->count === 0 &&
+            $search_obj->start === 0 &&
+            $search_obj->total === -1
+        ) {
+            $this->snoopy->fetch($url);
+            $search_str = $this->snoopy->results;
+            $search_obj = json_decode($search_str);
+        }
+
         $suggest_key = $type === "movie" ? "subjects" : "books";
         $suggest_arr = $search_obj->{$suggest_key};
 
