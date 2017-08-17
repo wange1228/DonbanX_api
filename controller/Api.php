@@ -26,6 +26,7 @@ class Api {
         "book.dangdang.com",
         "v.dangdang.com",
         "e.dangdang.com",
+        "category.dangdang.com",
         "item.jd.com",
         "re.jd.com",
         "e.jd.com",
