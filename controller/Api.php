@@ -50,6 +50,21 @@ class Api {
         $this->log = new Log();
     }
 
+    public function get_rules() {
+        header("Content-type: application/json");
+        header("Access-Control-Allow-Origin: *");
+        $host = trim(htmlspecialchars($_POST["host"]));
+        include_once(BASEPATH."controller/Rule.php");
+        $rule = new Rule();
+        $output = $rule->get_rule($host);
+        echo json_encode(array(
+            "ret" => $output ? 0 : 1,
+            "data" => $output ? (object) array(
+                "rules" => $output
+            ) : (object) array()
+        ));
+    }
+
     /**
      * 获取豆瓣简介
      */
@@ -275,7 +290,7 @@ class Api {
             $name = $result["name"];
             $rate = $result["rate"];
 
-            if (trim($name) !== '') {
+            if ($result["id"] !== "") {
                 // 抓到数据后插入数据库
                 $this->set_rate($type, $id, $name, $average, $vote, $star, $rate);
                 $output = (object) array(
