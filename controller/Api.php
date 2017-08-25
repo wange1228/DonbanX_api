@@ -28,7 +28,7 @@ class Api {
         "e.dangdang.com",
         "category.dangdang.com",
         "item.jd.com",
-        "re.jd.com",
+        "sale.jd.com",
         "e.jd.com",
         "book.jd.com",
         "list.jd.com",
@@ -73,6 +73,8 @@ class Api {
         header("Access-Control-Allow-Origin: *");
         $name = trim(htmlspecialchars($_POST["name"]));
         $type = trim(htmlspecialchars($_POST["type"]));
+        $href = trim(htmlspecialchars($_POST["href"]));
+        $isbn = trim(htmlspecialchars($_POST["isbn"]));
 
         $output = NULL;
         if ($name !== "" &&                                             // 名称非空验证
@@ -80,10 +82,29 @@ class Api {
             !is_null($_SERVER["HTTP_REFERER"]) &&                       // referer 非空验证
             in_array($this->match_host($_SERVER["HTTP_REFERER"]), self::$hosts)  // referer 白名单验证
             ) {
-            $suggest_arr = $this->get_suggest($name, $type);
-            if (count($suggest_arr) !== 0) {
-                $suggest_obj = $suggest_arr[0];
-                $output = $suggest_obj;
+
+            if ($href !== "") {
+                if ($this->match_host($href) === "item.jd.com") {
+                    $href = str_replace("https://", "http://", $href);
+                }
+                $this->snoopy->fetch($href);
+                $html_str = $this->snoopy->results;
+                preg_match('/97[89]\d{9}[xX\d]/i', $html_str, $matches);
+
+                if ($matches) {
+                    $name = $matches[0];
+                }
+                $suggest_arr = $this->get_suggest($name, $type);
+                if (count($suggest_arr) !== 0) {
+                    $suggest_obj = $suggest_arr[0];
+                    $output = $suggest_obj;
+                }
+            } else {
+                $suggest_arr = $this->get_suggest($name, $type);
+                if (count($suggest_arr) !== 0) {
+                    $suggest_obj = $suggest_arr[0];
+                    $output = $suggest_obj;
+                }
             }
         }
 

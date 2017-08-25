@@ -1,6 +1,7 @@
 <?php
 class Rule {
     private static $amazon = array(
+        // https://www.amazon.cn/dp/B00ARB0HBO
         array(
             "match" => "$('#productTitle').length !== 0",
             "tagIsbn" => "#detail_bullets_id",
@@ -8,6 +9,7 @@ class Rule {
             "type" => "book",
             "event" => "pageload"
         ),
+        // https://www.amazon.cn/gp/product/B073WY891S
         array(
             "match" => "$('#ebooksProductTitle').length !== 0",
             "tagIsbn" => "body",
@@ -17,13 +19,29 @@ class Rule {
         ),
         array(
             "match" => "/\/gp\/product\//i",
-            "tag" => ".zg_item_compact, .a-spacing-medium.p13n-sc-list-item, .a-carousel-card, .rhf-RVIs, .floor-hotasin-item, .a-fixed-left-grid-col, .a-link-normal",
+            "tags" => array(
+                    ".zg_item_compact",
+                    ".a-spacing-medium.p13n-sc-list-item",
+                    ".a-carousel-card",
+                    ".rhf-RVIs",
+                    ".floor-hotasin-item",
+                    ".a-fixed-left-grid-col",
+                    ".a-link-normal"
+                ),
             "type" => "book",
             "event" => "mouseover"
         ),
         array(
             "match" => "/\/dp\//i",
-            "tag" => ".a-carousel-card, #recentlyViewed td.text, .ch-tabwidget-pc-contentAsin, .feed-carousel-card, .a-fixed-left-grid-col .a-link-normal, .a-unordered-list .a-link-normal, .acsUxWidget .bxc-grid__column",
+            "tags" => array(
+                    ".a-carousel-card",
+                    "#recentlyViewed td.text",
+                    ".ch-tabwidget-pc-contentAsin",
+                    ".feed-carousel-card",
+                    ".a-fixed-left-grid-col .a-link-normal",
+                    ".a-unordered-list .a-link-normal",
+                    ".acsUxWidget .bxc-grid__column"
+                ),
             "type" => "book",
             "event" => "mouseover"
         )
@@ -39,25 +57,43 @@ class Rule {
         ),
         array(
             "match" => "/\b2\d{7}\.html/i",
-            "tag" => ".group_buy .over li, .mbox_another .over li, .product_content .aside li",
+            "tags" => array(
+                    ".group_buy .over li",
+                    ".mbox_another .over li",
+                    ".product_content .aside li"
+                ),
             "type" => "book",
             "event" => "mouseover"
         ),
         array(
             "match" => "/product\.dangdang\.com\/2\d{7}.*\.html/i",
-            "tag" => ".product_ul li, .list_aa li, .list_ab li, .content li, .shoplist .pic",
+            "tags" => array(
+                    ".product_ul li",
+                    ".list_aa li",
+                    ".list_ab li",
+                    ".content li",
+                    ".shoplist .pic"
+                ),
             "type" => "book",
             "event" => "mouseover"
         ),
         array(
             "match" => "/a\.dangdang\.com\/jump\.php\?.*/i",
-            "tag" => ".product_content .aside li",
+            "tags" => array(
+                    ".product_content .aside li"
+                ),
             "type" => "book",
             "event" => "mouseover"
         ),
         array(
             "match" => "/\/product\/\.\/\d+\.html/i",
-            "tag" => ".limitCell, .bookCell, .bigCell, .topRightBookCell a, .list_content .book_content",
+            "tags" => array(
+                    ".limitCell",
+                    ".bookCell",
+                    ".bigCell",
+                    ".topRightBookCell a",
+                    ".list_content .book_content"
+                ),
             "type" => "book",
             "event" => "mouseover"
         )
@@ -77,6 +113,19 @@ class Rule {
             "tagTitle" => ".sku-name",
             "type" => "book",
             "event" => "pageload"
+        ),
+        array(
+            "match" => "/\/\/item\.jd\.com\/\d*/i",
+            "tags" => array(
+                    ".book_discount .list li",
+                    ".book_new .list li",
+                    ".book_act .list li",
+                    ".book_hot .list li",
+                    ".book_found .list li",
+                    ".content-item li"
+                ),
+            "type" => "book",
+            "event" => "mouseover"
         )
     );
 
@@ -102,7 +151,7 @@ class Rule {
             break;
 
             case "item.jd.com":
-            case "re.jd.com":
+            case "sale.jd.com":
             case "e.jd.com":
             case "book.jd.com":
             case "list.jd.com":
