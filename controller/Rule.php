@@ -1,7 +1,6 @@
 <?php
 class Rule {
     private static $amazon = array(
-        // https://www.amazon.cn/dp/B00ARB0HBO
         array(
             "match" => "$('#productTitle').length !== 0",
             "tagIsbn" => "#detail_bullets_id",
@@ -9,7 +8,6 @@ class Rule {
             "type" => "book",
             "event" => "pageload"
         ),
-        // https://www.amazon.cn/gp/product/B073WY891S
         array(
             "match" => "$('#ebooksProductTitle').length !== 0",
             "tagIsbn" => "body",
@@ -115,6 +113,13 @@ class Rule {
             "event" => "pageload"
         ),
         array(
+            "match" => "(window.location.host === 'read.jd.com') && ($('.works h1').length > 0)",
+            "tagIsbn" => ".book-authorinfo",
+            "tagTitle" => ".works h1",
+            "type" => "book",
+            "event" => "pageload"
+        ),
+        array(
             "match" => "/\/\/item\.jd\.com\/\d*/i",
             "tags" => array(
                     ".book_discount .list li",
@@ -122,7 +127,35 @@ class Rule {
                     ".book_act .list li",
                     ".book_hot .list li",
                     ".book_found .list li",
-                    ".content-item li"
+                    ".content-item li",
+                    "#combine-con .p-name",
+                    ".related-buy li",
+                    ".rec-item li",
+                    "#guess-scroll li",
+                    "#plist li",
+                    ".ab-goods li",
+                    "#J_goodsList li",
+                    ".user_k_spfy li",
+                    ".newbook-shelves li",
+                    ".best-sale-bot li",
+                    ".floorbook li",
+                    "#plist .p-name",
+                    ".findgoods_list_content li",
+                    ".j-module li",
+                    ".p-blist li",
+                    ".blist li",
+                    ".layout-m li",
+                    ".ui-switchable-pannel li",
+                    ".m-list li",
+                    ".ui-switchable-panel li"
+                ),
+            "type" => "book",
+            "event" => "mouseover"
+        ),
+        array(
+            "match" => "/\/\/e\.jd\.com\/\d*/i",
+            "tags" => array(
+                    ".best-sale-bot li"
                 ),
             "type" => "book",
             "event" => "mouseover"
@@ -155,7 +188,9 @@ class Rule {
             case "e.jd.com":
             case "book.jd.com":
             case "list.jd.com":
-            case "search.jd.com":
+            case "mall.jd.com":
+            case "fxhh.jd.com":
+            case "read.jd.com":
                 $rule = self::$jd;
             break;
         }

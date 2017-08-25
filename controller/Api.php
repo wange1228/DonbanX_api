@@ -32,7 +32,9 @@ class Api {
         "e.jd.com",
         "book.jd.com",
         "list.jd.com",
-        "search.e.jd.com",
+        "mall.jd.com",
+        "fxhh.jd.com",
+        "read.jd.com",
         "movie.douban.com",
         "book.douban.com",
         "read.douban.com",
@@ -74,7 +76,6 @@ class Api {
         $name = trim(htmlspecialchars($_POST["name"]));
         $type = trim(htmlspecialchars($_POST["type"]));
         $href = trim(htmlspecialchars($_POST["href"]));
-        $isbn = trim(htmlspecialchars($_POST["isbn"]));
 
         $output = NULL;
         if ($name !== "" &&                                             // 名称非空验证
@@ -82,10 +83,10 @@ class Api {
             !is_null($_SERVER["HTTP_REFERER"]) &&                       // referer 非空验证
             in_array($this->match_host($_SERVER["HTTP_REFERER"]), self::$hosts)  // referer 白名单验证
             ) {
-
             if ($href !== "") {
                 if ($this->match_host($href) === "item.jd.com") {
                     $href = str_replace("https://", "http://", $href);
+                    $href = str_replace("item.jd.com/30", "e.jd.com/30", $href);
                 }
                 $this->snoopy->fetch($href);
                 $html_str = $this->snoopy->results;
