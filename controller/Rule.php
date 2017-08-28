@@ -192,6 +192,15 @@ class Rule {
         )
     );
 
+    private static $qq = array(
+        array(
+            "match" => "(window.location.host === 'v.qq.com') && $('#tenvideo_player').length !== 0",
+            "tagTitle" => "h1.video_title a",
+            "type" => "movie",
+            "event" => "pageload"
+        )
+    );
+
     public function __construct() {
         set_time_limit(0);
         date_default_timezone_set("Asia/Shanghai");
@@ -230,6 +239,10 @@ class Rule {
 
             case "read.douban.com":
                 $rule = self::$douban;
+            break;
+
+            case "v.qq.com":
+                $rule = self::$qq;
             break;
         }
 
