@@ -147,7 +147,7 @@ class Rule {
                     ".layout-m li",
                     ".ui-switchable-pannel li",
                     ".m-list li",
-                    ".ui-switchable-panel li"
+                    ".public-list li"
                 ),
             "type" => "book",
             "event" => "mouseover"
@@ -159,6 +159,26 @@ class Rule {
                 ),
             "type" => "book",
             "event" => "mouseover"
+        ),
+        array(
+            "match" => "/\/\/read\.jd\.com\/\d*/i",
+            "tags" => array(
+                    "#reco-list li",
+                    ".m-list li",
+                    ".public-list .tabcon li"
+                ),
+            "type" => "book",
+            "event" => "mouseover"
+        )
+    );
+
+    private static $tmall = array(
+        array(
+            "match" => "location.href.match(/detail\.tmall\.com\/item\.htm.*spm=a22/i)",
+            "tagIsbn" => "#attributes",
+            "tagTitle" => ".tb-detail-hd h1",
+            "type" => "book",
+            "event" => "pageload"
         )
     );
 
@@ -192,6 +212,10 @@ class Rule {
             case "fxhh.jd.com":
             case "read.jd.com":
                 $rule = self::$jd;
+            break;
+
+            case "detail.tmall.com":
+                $rule = self::$tmall;
             break;
         }
 

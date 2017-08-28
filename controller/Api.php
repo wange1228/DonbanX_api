@@ -38,7 +38,6 @@ class Api {
         "movie.douban.com",
         "book.douban.com",
         "read.douban.com",
-        "book.tmall.com",
         "detail.tmall.com"
     );
 
