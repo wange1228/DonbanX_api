@@ -182,6 +182,16 @@ class Rule {
         )
     );
 
+    private static $douban = array(
+        array(
+            "match" => "location.href.match(/\/\/read\.douban\.com\/ebook\/\d+/i)",
+            "tagIsbn" => ".article-profile-secondary",
+            "tagTitle" => ".article-profile-bd h1",
+            "type" => "book",
+            "event" => "pageload"
+        )
+    );
+
     public function __construct() {
         set_time_limit(0);
         date_default_timezone_set("Asia/Shanghai");
@@ -216,6 +226,10 @@ class Rule {
 
             case "detail.tmall.com":
                 $rule = self::$tmall;
+            break;
+
+            case "read.douban.com":
+                $rule = self::$douban;
             break;
         }
 

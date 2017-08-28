@@ -93,11 +93,11 @@ class Api {
 
                 if ($matches) {
                     $name = $matches[0];
-                }
-                $suggest_arr = $this->get_suggest($name, $type);
-                if (count($suggest_arr) !== 0) {
-                    $suggest_obj = $suggest_arr[0];
-                    $output = $suggest_obj;
+                    $suggest_arr = $this->get_suggest($name, $type);
+                    if (count($suggest_arr) !== 0) {
+                        $suggest_obj = $suggest_arr[0];
+                        $output = $suggest_obj;
+                    }
                 }
             } else {
                 $suggest_arr = $this->get_suggest($name, $type);
