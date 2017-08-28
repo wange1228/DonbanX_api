@@ -245,7 +245,7 @@ class Api {
         } else if ($type === "book") {
             preg_match('/book\.douban\.com\/subject\/(\d+)/i', $url, $match_id);
         }
-        preg_match('/<span property="v:itemreviewed">(.*)?<\/span>[\s\S]*<strong .*property="v:average">\s*([0-9]\.[0-9])?\s*<\/strong>[\s\S]*<div class="ll bigstar(\d{2})"><\/div>[\s\S]*<span property="v:votes">(\d+)?<\/span>/i', $detail_str, $matches);
+        preg_match('/<span property="v:itemreviewed">(.*)?<\/span>[\s\S]*<strong .*property="v:average">\s*([0-9]\.[0-9])?\s*<\/strong>[\s\S]*<div class="ll .*bigstar(\d{2})"><\/div>[\s\S]*<span property="v:votes">(\d+)?<\/span>/i', $detail_str, $matches);
         preg_match_all('/<span class="rating_per">([0-9]+\.[0-9])?\%<\/span>/i', $detail_str, $match_rate);
 
         $id = $match_id[1];
@@ -311,7 +311,7 @@ class Api {
             $name = $result["name"];
             $rate = $result["rate"];
 
-            if ($result["id"] !== "") {
+            if ($result["id"] !== "" && $name !== "") {
                 // 抓到数据后插入数据库
                 $this->set_rate($type, $id, $name, $average, $vote, $star, $rate);
                 $output = (object) array(
