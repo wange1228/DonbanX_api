@@ -198,6 +198,30 @@ class Rule {
             "tagTitle" => "h1.video_title a",
             "type" => "movie",
             "event" => "pageload"
+        ),
+        array(
+            "match" => "/\/\/v\.qq\.com\/x\/cover\/.*/i",
+            "tags" => array(
+                    ".figures_list li"
+                ),
+            "type" => "movie",
+            "event" => "mouseover"
+        ),
+        array(
+            "match" => "/\/\/v\.qq\.com\/detail\/.*/i",
+            "tags" => array(
+                    ".figures_list li"
+                ),
+            "type" => "movie",
+            "event" => "mouseover"
+        ),
+        array(
+            "match" => "/\/\/v\.qq\.com\/x\/search\/\?q.*/i",
+            "tags" => array(
+                    ".table_list li .item"
+                ),
+            "type" => "movie",
+            "event" => "mouseover"
         )
     );
 
@@ -242,6 +266,7 @@ class Rule {
             break;
 
             case "v.qq.com":
+            case "film.qq.com":
                 $rule = self::$qq;
             break;
         }

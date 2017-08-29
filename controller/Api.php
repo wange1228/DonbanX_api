@@ -82,6 +82,7 @@ class Api {
             !is_null($_SERVER["HTTP_REFERER"]) &&                       // referer 非空验证
             in_array($this->match_host($_SERVER["HTTP_REFERER"]), self::$hosts)  // referer 白名单验证
             ) {
+            if ($type === "movie") {$href = "";}
             if ($href !== "") {
                 if ($this->match_host($href) === "item.jd.com") {
                     $href = str_replace("https://", "http://", $href);
